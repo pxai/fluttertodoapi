@@ -5,6 +5,24 @@ import 'dart:convert';
 import '/models/todo.dart';
 
 final todosProvider = StreamProvider.autoDispose<List<Todo>>((ref) async* {
+  final response =
+      await http.get(Uri.parse('http://localhost:3000/tasks'), headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'x-myapi-token':
+        'eyJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoxNzA3NzU3MDYxfQ.Tvm1X8QZm-HRomH3vlByfUrl_2LIkN6BeQWCJg8QEh4',
+  });
+  if (response.statusCode == 200) {
+    final List<Todo> todos = (jsonDecode(response.body) as List)
+        .map((data) => Todo.fromJson(data))
+        .toList();
+    yield todos;
+  } else {
+    throw Exception('Failed to load todos');
+  }
+});
+
+final todosProvider2 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
   final response = await http.get(Uri.parse('http://localhost:3000/data'));
   if (response.statusCode == 200) {
     final List<Todo> todos = (jsonDecode(response.body) as List)
@@ -34,7 +52,12 @@ class TodoListNotifier extends StateNotifier<List<Todo>> {
 
   Future<Todo> fetchTodo(int id) async {
     final response =
-        await http.get(Uri.parse('http://localhost:3000/show/$id'));
+        await http.get(Uri.parse('http://localhost:3000/tasks/$id'), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'x-myapi-token':
+          'eyJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoxNzA3NzU3MDYxfQ.Tvm1X8QZm-HRomH3vlByfUrl_2LIkN6BeQWCJg8QEh4',
+    });
 
     if (response.statusCode == 200) {
       return Todo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
