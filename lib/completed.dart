@@ -21,7 +21,7 @@ class CompletedPage extends ConsumerWidget {
         itemCount: completedTodos.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(completedTodos[index].content),
+            title: Text(completedTodos[index].name),
             trailing: Checkbox(
               value: todos[index].completed,
               onChanged: (bool? value) {
@@ -33,7 +33,7 @@ class CompletedPage extends ConsumerWidget {
             onLongPress: () {
               ref
                   .read(todoListProvider.notifier)
-                  .remove(completedTodos[index].todoId);
+                  .remove(completedTodos[index].id);
             },
           );
         },

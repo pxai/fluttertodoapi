@@ -23,7 +23,7 @@ class AddTodo extends ConsumerWidget {
           TextButton(
               onPressed: () {
                 // how to get todoListProvider.notifier
-                ref.read(todoListProvider.notifier).add(controller.text);
+                ref.read(todoListProvider.notifier).add(4, controller.text);
                 Navigator.of(context).pop();
               },
               child: Text('Add Todo'))

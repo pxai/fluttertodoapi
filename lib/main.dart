@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertodostate/completed.dart';
 import 'add.dart';
 import 'completed.dart';
+import 'detail.dart';
 import 'models/todo.dart';
 import 'provider/todolist_provider.dart';
 
@@ -41,27 +42,32 @@ class MyHomePage extends ConsumerWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(title),
         ),
-        body: ListView.builder(
-          itemCount: unCompletedTodos.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(unCompletedTodos[index].content),
-              trailing: Checkbox(
-                value: todos[index].completed,
-                onChanged: (bool? value) {
-                  ref
-                      .read(todoListProvider.notifier)
-                      .completeTodo(unCompletedTodos[index]);
+        body: ref.watch(todosProvider).when(loading: () {
+          return const CircularProgressIndicator();
+        }, error: (error, stack) {
+          return Text('Error: $error');
+        }, data: (data) {
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(data[index].name),
+                trailing: Checkbox(
+                  value: data[index].completed,
+                  onChanged: (bool? value) {
+                    ref
+                        .read(todoListProvider.notifier)
+                        .completeTodo(data[index]);
+                  },
+                ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => DetailPage(id: data[index].id)));
                 },
-              ),
-              onLongPress: () {
-                ref
-                    .read(todoListProvider.notifier)
-                    .remove(unCompletedTodos[index].todoId);
-              },
-            );
-          },
-        ),
+              );
+            },
+          );
+        }),
         floatingActionButton: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -78,6 +84,15 @@ class MyHomePage extends ConsumerWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           const CompletedPage(title: "Completed Todos")));
+                },
+                tooltip: 'Completed',
+                child: const Icon(Icons.check_circle_outline),
+              ),
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const CompletedPage(title: "See detail")));
                 },
                 tooltip: 'Completed',
                 child: const Icon(Icons.check_circle_outline),
