@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -36,9 +35,9 @@ class UserNotifier extends StateNotifier<User> {
     }
   }
 
-  Future<User> signUpUser(String email, String password) async {
+  Future<String> signUpUser(String email, String password) async {
     final response =
-        await http.post(Uri.parse('http://localhost:3000/users/sign_up.json'),
+        await http.post(Uri.parse('http://localhost:3000/users.json'),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
@@ -50,7 +49,10 @@ class UserNotifier extends StateNotifier<User> {
               }
             }));
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      print("This is the response: $response.body");
+      final user =
+          User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      return user.token;
     } else {
       throw Exception('Failed to load user');
     }
