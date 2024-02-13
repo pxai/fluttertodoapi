@@ -29,13 +29,13 @@ class UserNotifier extends StateNotifier<User> {
             }));
 
     if (response.statusCode == 200) {
-      user.setToken(jsonDecode(response.body).token);
+      state = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     } else {
       throw Exception('Failed to load user');
     }
   }
 
-  Future<String> signUpUser(String email, String password) async {
+  Future<bool> signUpUser(String email, String password) async {
     final response =
         await http.post(Uri.parse('http://localhost:3000/users.json'),
             headers: {
@@ -48,13 +48,13 @@ class UserNotifier extends StateNotifier<User> {
                 'password': password,
               }
             }));
-    if (response.statusCode == 200) {
-      print("This is the response: $response.body");
-      final user =
-          User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-      return user.token;
+    print("Result status code: ${response.statusCode}");
+    if (response.statusCode == 201) {
+      final result = jsonDecode(response.body) as Map<String, dynamic>;
+      print("Result from sign up: $result");
+      return true;
     } else {
-      throw Exception('Failed to load user');
+      throw Exception('Failed to load user. Code: ${response.statusCode}');
     }
   }
 }

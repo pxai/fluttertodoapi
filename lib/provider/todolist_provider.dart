@@ -3,14 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '/models/todo.dart';
+import 'user_provider.dart';
 
 final todosProvider = StreamProvider.autoDispose<List<Todo>>((ref) async* {
+  final user = ref.read(userProvider);
+  print("todosProvider fetchTodo user token : ${user.token}");
   final response =
       await http.get(Uri.parse('http://localhost:3000/tasks'), headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'x-myapi-token':
-        'eyJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoxNzA3NzU3MDYxfQ.Tvm1X8QZm-HRomH3vlByfUrl_2LIkN6BeQWCJg8QEh4',
+    'x-myapi-token': user.token,
   });
   if (response.statusCode == 200) {
     final List<Todo> todos = (jsonDecode(response.body) as List)
@@ -35,10 +37,11 @@ final todosProvider2 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
 });
 
 final todoListProvider = StateNotifierProvider<TodoListNotifier, List<Todo>>(
-    (ref) => TodoListNotifier());
+    (ref) => TodoListNotifier(ref));
 
 class TodoListNotifier extends StateNotifier<List<Todo>> {
-  TodoListNotifier() : super([]);
+  TodoListNotifier(this.ref) : super([]);
+  final Ref ref;
 
   Future<Todo> fetchTodos() async {
     final response = await http.get(Uri.parse('http://localhost:3000/data'));
@@ -51,12 +54,13 @@ class TodoListNotifier extends StateNotifier<List<Todo>> {
   }
 
   Future<Todo> fetchTodo(int id) async {
+    final user = ref.read(userProvider);
+    print("fetchTodo user token : ${user.token}");
     final response =
         await http.get(Uri.parse('http://localhost:3000/tasks/$id'), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'x-myapi-token':
-          'eyJhbGciOiJIUzI1NiJ9.eyJleHBpcmVzIjoxNzA3NzU3MDYxfQ.Tvm1X8QZm-HRomH3vlByfUrl_2LIkN6BeQWCJg8QEh4',
+      'x-myapi-token': user.token,
     });
 
     if (response.statusCode == 200) {

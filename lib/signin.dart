@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertodostate/completed.dart';
 import 'package:fluttertodostate/signup.dart';
 import 'provider/user_provider.dart';
+import 'models/user.dart';
+import 'home.dart';
 
 class SignInPage extends ConsumerWidget {
-  const SignInPage({super.key});
+  const SignInPage({super.key, required this.email});
+
+  final String email;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider.notifier);
-    TextEditingController emailController =
-        TextEditingController(text: "myemail8@email.com");
+    TextEditingController emailController = TextEditingController(text: email);
     TextEditingController passwordController =
         TextEditingController(text: "mypassword1");
     return Scaffold(
@@ -44,10 +46,17 @@ class SignInPage extends ConsumerWidget {
               },
               child: TextButton(
                 child: Text('Login'),
-                onPressed: () {
+                onPressed: () async {
                   // how to get todoListProvider.notifier
-                  user.signInUser(
-                      emailController.text, passwordController.text);
+                  final result = await ref
+                      .read(userProvider.notifier)
+                      .signInUser(
+                          emailController.text, passwordController.text);
+                  print(
+                      "This is the result: ${ref.watch(userProvider).toString()}");
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const MyHomePage(title: 'My tasks')));
                 },
               ),
             ),

@@ -19,6 +19,7 @@ class User {
       id: json['id'],
       email: json['email'],
       password: json['password'],
+      token: json['token'],
     );
   }
 
@@ -28,5 +29,10 @@ class User {
       email: email ?? this.email,
       password: password ?? this.password,
     );
+  }
+
+  @override
+  String toString() {
+    return "id: $id, email: $email, password: ****, token: $token";
   }
 }

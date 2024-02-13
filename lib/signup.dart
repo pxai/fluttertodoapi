@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertodostate/completed.dart';
 import 'provider/user_provider.dart';
 import 'models/user.dart';
+import 'signin.dart';
 
 class SignUpPage extends ConsumerWidget {
   const SignUpPage({super.key});
@@ -44,9 +45,13 @@ class SignUpPage extends ConsumerWidget {
               },
               child: TextButton(
                 child: Text('Sign Up'),
-                onPressed: () {
-                  user.signUpUser(
+                onPressed: () async {
+                  final email = emailController.text;
+                  bool result = await user.signUpUser(
                       emailController.text, passwordController.text);
+                  print("This is the result: $result  - $email");
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const SignInPage(email: '')));
                 },
               ),
             ),
