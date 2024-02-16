@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertodostate/completed.dart';
-import 'package:fluttertodostate/detail.dart';
+import 'package:fluttertodoapi/completed.dart';
+import 'package:fluttertodoapi/detail.dart';
 import 'models/todo.dart';
 import 'detail.dart';
 import 'add.dart';
@@ -13,9 +13,6 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<Todo> todos = ref.watch(todoListProvider);
-    List<Todo> unCompletedTodos =
-        todos.where((element) => element.completed == false).toList();
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,

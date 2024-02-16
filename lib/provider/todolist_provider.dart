@@ -6,6 +6,13 @@ import '/models/todo.dart';
 import 'user_provider.dart';
 
 final todosProvider = StreamProvider.autoDispose<List<Todo>>((ref) async* {
+  final notifier = ref.read(todoListProvider.notifier);
+  final List<Todo> todos = await notifier.fetchTodos();
+  print("todosProvider> THIS IS IT>  fetchTodo todos : $todos");
+  yield todos;
+});
+
+final todosProvider2 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
   final user = ref.read(userProvider);
   print("todosProvider fetchTodo user token : ${user.token}");
   final response =
@@ -24,7 +31,7 @@ final todosProvider = StreamProvider.autoDispose<List<Todo>>((ref) async* {
   }
 });
 
-final todosProvider2 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
+final todosProvider3 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
   final response = await http.get(Uri.parse('http://localhost:3000/data'));
   if (response.statusCode == 200) {
     final List<Todo> todos = (jsonDecode(response.body) as List)
@@ -37,27 +44,38 @@ final todosProvider2 = StreamProvider.autoDispose<List<Todo>>((ref) async* {
 });
 
 final todoListProvider = StateNotifierProvider<TodoListNotifier, List<Todo>>(
-    (ref) => TodoListNotifier(ref));
+    (ref) => TodoListNotifier(http.Client(), ref));
 
 class TodoListNotifier extends StateNotifier<List<Todo>> {
-  TodoListNotifier(this.ref) : super([]);
+  TodoListNotifier(this.httpClient, this.ref) : super([]);
   final Ref ref;
+  http.Client httpClient;
 
-  Future<Todo> fetchTodos() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/data'));
-
+  Future<List<Todo>> fetchTodos() async {
+    final user = ref.read(userProvider);
+    print("todosProvider> fetchTodos> user token : ${user!.token}");
+    final response = await httpClient
+        .get(Uri.parse('http://localhost:3000/tasks'), headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'x-myapi-token': user!.token,
+    });
+    print(
+        "This is the response: ${response.statusCode} - ${response.body} - ${response.headers}");
     if (response.statusCode == 200) {
-      return Todo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+      return (jsonDecode(response.body) as List)
+          .map((data) => Todo.fromJson(data))
+          .toList();
     } else {
-      throw Exception('Failed to load todo');
+      throw Exception('Failed to load todos');
     }
   }
 
   Future<Todo> fetchTodo(int id) async {
     final user = ref.read(userProvider);
     print("fetchTodo user token : ${user.token}");
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/tasks/$id'), headers: {
+    final response = await httpClient
+        .get(Uri.parse('http://localhost:3000/tasks/$id'), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'x-myapi-token': user.token,

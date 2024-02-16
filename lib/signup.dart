@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertodostate/completed.dart';
+import 'package:fluttertodoapi/completed.dart';
 import 'provider/user_provider.dart';
 import 'models/user.dart';
 import 'signin.dart';

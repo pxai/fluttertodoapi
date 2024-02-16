@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fluttertodostate/completed.dart';
-import 'package:fluttertodostate/signin.dart';
+import 'package:fluttertodoapi/completed.dart';
+import 'package:fluttertodoapi/signin.dart';
 import 'signin.dart';
 import 'provider/todolist_provider.dart';
 
