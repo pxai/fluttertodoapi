@@ -14,3 +14,10 @@ https://blog.logrocket.com/networking-flutter-using-dio/
 
 https://docs.flutter.dev/cookbook/testing/unit/mocking
 
+
+## Adding a single dependency
+
+ flutter pub add --dev http_mock_adapter
+
+## Running a single test
+ flutter test --name='initial state is empty array'

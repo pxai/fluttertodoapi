@@ -49,7 +49,7 @@ final todoListProvider = StateNotifierProvider<TodoListNotifier, List<Todo>>(
 class TodoListNotifier extends StateNotifier<List<Todo>> {
   TodoListNotifier(this.httpClient, this.ref) : super([]);
   final Ref ref;
-  final httpClient;
+  var httpClient;
 
   Future<List<Todo>> fetchTodos() async {
     final user = ref.read(userProvider);
